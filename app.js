@@ -9,27 +9,52 @@ var connection = mysql.createConnection({
     database: "serverDB"
 });
 
-function start ()
-{
-    function onRequest(request, response)
-    {
-        var pathname = url.parse(request.url).pathname;
-        console.log("Request for " + pathname + " received.");
-        response.writeHead(200, {"Content-Type": "text/plain"});
-        response.write("Test!");
-        response.end();
-    }
+var express = require("express");
+var app = express();
 
-    http.createServer(onRequest).listen(8888);
-    console.log("Started..");
-    connection.connect();
+// function start ()
+// {
+//     function onRequest(request, response)
+//     {
+//         var pathname = url.parse(request.url).pathname;
+//         // console.log("Request for " + pathname + " received.");
+//         response.writeHead(200, {"Content-Type": "text/plain"});
+//         response.write("Running!");
+//         response.end();
+//     }
+
+//     http.createServer(onRequest).listen(8888);
+//     console.log("Started..");
+//     // connection.connect();
+//     // connection.query("SELECT * FROM test_DB", function (error, results, fields)
+//     // {
+//     //     if (error) console.log(error);
+//     //     console.log("The Result is:");
+//     //     console.log(results);
+//     // })
+// }
+
+app.get('/getInfos', function (req, res)
+{
+    res.writeHead(200, { 'Content-Type': 'json' });
     connection.query("SELECT * FROM test_DB", function (error, results, fields)
     {
         if (error) console.log(error);
-        console.log("The Result is:");
-        console.log(results);
-    })
-}
+        res.write(JSON.stringify(results));
+        res.end();
+    });
+});
 
-start();
-console.log("Server running at 8888...");
+app.get('/', function (req, res)
+{
+    res.end('Need to have arguments!');
+})
+
+var app = app.listen(8080, function ()
+{
+    var host = app.address().address;
+    var port = app.address().port;
+    connection.connect();
+
+    console.log("应用实例，访问地址为 http://%s:%s", host, port);
+});
