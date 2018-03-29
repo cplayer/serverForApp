@@ -1,5 +1,7 @@
+'use strict'
 var http = require("http")
 var url = require("url")
+var querystring = require("querystring");
 
 var mysql = require("mysql");
 var connection = mysql.createConnection({
@@ -42,6 +44,30 @@ app.get('/getInfos', function (req, res)
         if (error) console.log(error);
         res.write(JSON.stringify(results));
         res.end();
+    });
+});
+
+app.post('/getInfosById', function (req, res)
+{
+    var post = '';
+    req.on('data', function(chunk) 
+    {
+        post += chunk;
+    });
+    req.on('end', function () 
+    {
+        post = querystring.parse(post);
+        res.writeHead(200, { 'Content-Type': 'json' });
+        if (post.id)
+        {
+            console.log("id = " + post.id);
+            connection.query("SELECT * FROM test_DB WHERE id = " + post.id, function (error, results, fields)
+            {
+                if (error) console.log(error);
+                res.write(JSON.stringify(results));
+                res.end();
+            });
+        }
     });
 });
 
