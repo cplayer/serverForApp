@@ -1,6 +1,7 @@
 'use strict'
-var http = require("http")
-var url = require("url")
+var http = require("http");
+var url = require("url");
+var util = require("util");
 var querystring = require("querystring");
 
 var mysql = require("mysql");
@@ -75,6 +76,30 @@ app.get('/', function (req, res)
 {
     res.end('Need to have arguments!');
 })
+
+// app.get('/gotoDB', function (req, res) 
+// {
+//     var params = url.parse(req.url, true).query;
+//     var name = params.name;
+//     var time = params.time;
+//     var value = params.value;
+//     connection.query("INSERT INTO sensorDB VALUES (" + name + ',' + value + ',' + time + ")", function (error, results, fields)
+//     {
+//         if (error) console.log(error);
+//         res.write(JSON.stringify(results));
+//         res.end();
+//     });
+// })
+
+app.get('/getDB', function (req, res)
+{
+    connection.query("SELECT * FROM sensorDB", function (error, results, fields)
+    {
+        if (error) console.log(error);
+        res.write(JSON.stringify(results));
+        res.end();
+    });
+});
 
 var app = app.listen(8080, function ()
 {
